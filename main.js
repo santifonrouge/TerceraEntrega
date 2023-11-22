@@ -91,6 +91,29 @@ cerrarCarritoBtn.addEventListener('click', () => {
   carritoContainer.style.display = 'none';
 });
 
+// Función para mostrar los productos en el carrito usando AJAX
+function mostrarProductosEnCarritoConAjax() {
+  obtenerProductosDesdeServidor()
+    .then(data => {
+      productosEnCarrito = data;
+      mostrarProductosEnCarrito();
+    })
+    .catch(error => {
+      console.error('Error al obtener datos del servidor:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al obtener los datos del servidor.'
+      });
+    });
+}
+
+// Nueva función para obtener productos desde el servidor
+function obtenerProductosDesdeServidor() {
+  return fetch('/http://127.0.0.1:5501/productos')  
+    .then(response => response.json());
+}
+
 // Función para agregar un producto al carrito
 function agregarAlCarrito(producto) {
     const productoEnCarrito = productosEnCarrito.find(p => p.id === producto.id);
@@ -137,6 +160,57 @@ function reiniciarCarrito() {
   productosEnCarrito.length = 0;
   localStorage.setItem('productosEnCarrito', JSON.stringify(productosEnCarrito));
   mostrarProductosEnCarrito();
+}
+
+// Evento para abrir el carrito al hacer clic en el icono del carrito
+carritoIcono.addEventListener('click', () => {
+  carritoContainer.style.display = 'flex';
+  mostrarProductosEnCarrito();
+});
+
+// Evento para cerrar el carrito al hacer clic en el botón "Cerrar"
+cerrarCarritoBtn.addEventListener('click', () => {
+  carritoContainer.style.display = 'none';
+});
+
+// Función para agregar un producto al carrito
+function agregarAlCarrito(producto) {
+  const productoEnCarrito = productosEnCarrito.find(p => p.id === producto.id);
+
+  if (productoEnCarrito) {
+    productoEnCarrito.cantidad++;
+  } else {
+    producto.cantidad = 1;
+    productosEnCarrito.push(producto);
+  }
+
+  localStorage.setItem('productosEnCarrito', JSON.stringify(productosEnCarrito));
+  mostrarProductosEnCarrito();
+
+  // SweetAlert para agregar producto al carrito
+  Swal.fire({
+    icon: 'success',
+    title: '¡Producto agregado!',
+    text: `Se agregó ${producto.nombre} al carrito.`,
+    showConfirmButton: false,
+    timer: 1500
+  });
+}
+
+// Función para eliminar un producto del carrito
+function eliminarProducto(indice) {
+  productosEnCarrito.splice(indice, 1);
+  localStorage.setItem('productosEnCarrito', JSON.stringify(productosEnCarrito));
+  mostrarProductosEnCarrito();
+
+  // SweetAlert para eliminar producto del carrito
+  Swal.fire({
+    icon: 'success',
+    title: '¡Producto eliminado!',
+    text: 'Se eliminó el producto del carrito.',
+    showConfirmButton: false,
+    timer: 1500
+  });
 }
 
 // Asocia la función reiniciarCarrito a un botón o evento en tu HTML para que se ejecute cuando el usuario quiera reiniciar el carrito
