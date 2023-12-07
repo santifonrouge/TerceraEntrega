@@ -89,30 +89,25 @@ carritoIcono.addEventListener('click', () => {
 // Evento para cerrar el carrito al hacer clic en el botón "Cerrar"
 cerrarCarritoBtn.addEventListener('click', () => {
   carritoContainer.style.display = 'none';
-});
+}); 
 
-// Función para mostrar los productos en el carrito usando AJAX
-function mostrarProductosEnCarritoConAjax() {
-  obtenerProductosDesdeServidor()
-    .then(data => {
-      productosEnCarrito = data;
-      mostrarProductosEnCarrito();
-    })
-    .catch(error => {
-      console.error('Error al obtener datos del servidor:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al obtener los datos del servidor.'
-      });
-    });
-}
+// fetch
+fetch('https://jsonplaceholder.typicode.com/products', {
+  method: "POST",
+  body: JSON.stringify(productosJSON),
+})
+  .then((response) => {
+    if (response.status === 201) {
+      console.log('Los productos se agregaron correctamente');
+    } else {
+      console.log('Ocurrió un error al agregar los productos');
+    }
+  })
+  .catch((error) => {
+    console.error("Error en la solicitud:", error);
+  });
 
-// Nueva función para obtener productos desde el servidor
-function obtenerProductosDesdeServidor() {
-  return fetch('/http://127.0.0.1:5501/productos')  
-    .then(response => response.json());
-}
+
 
 // Función para agregar un producto al carrito
 function agregarAlCarrito(producto) {
@@ -219,3 +214,4 @@ botonReiniciar.addEventListener('click', reiniciarCarrito);
 
 // Llama a la función mostrarProductosEnCarrito al cargar la página para mostrar los productos almacenados en el carrito
 mostrarProductosEnCarrito();
+
